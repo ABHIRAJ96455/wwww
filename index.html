@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 40px;
+    }
+    #regBtn {
+      background-color: #1a1a1a;
+      color: white;
+      padding: 14px 28px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+    }
+    #regBtn:active {
+      background-color: #333;
+    }
+    #msg {
+      margin-top: 40px;
+      color: #00ff00;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tap to Register</h1>
+  <button id="regBtn" onclick="register()">Register</button>
+  <p id="msg"></p>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMN_dqsObCktz-Mqd_gedC2BjvvvmgLXk",
+      authDomain: "ff-script-login.firebaseapp.com",
+      databaseURL: "https://ff-script-login-default-rtdb.firebaseio.com",
+      projectId: "ff-script-login",
+      storageBucket: "ff-script-login.firebasestorage.app",
+      messagingSenderId: "1051285329458",
+      appId: "1:1051285329458:android:675e40f372e4899b474e2b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function generateUID() {
+      let uid = localStorage.getItem("deviceUID");
+      if (!uid) {
+        uid = 'uid-' + Math.random().toString(36).substr(2, 9) + Date.now();
+        localStorage.setItem("deviceUID", uid);
+      }
+      return uid;
+    }
+
+    function register() {
+      const uid = generateUID();
+      const now = Date.now();
+
+      db.ref("users/" + uid).set({ registeredAt: now })
+        .then(() => {
+          document.getElementById("msg").innerHTML = "Registered Successfully<br>Valid for 24 Hours";
+          const btn = document.getElementById("regBtn");
+          btn.innerText = "✔ Registered";
+          btn.style.backgroundColor = "green";
+        })
+        .catch(err => {
+          document.getElementById("msg").innerText = "❌ Error: " + err.message;
+        });
+    }
+  </script>
+</body>
+</html>
